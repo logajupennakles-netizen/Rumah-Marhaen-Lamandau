@@ -7,9 +7,11 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
-    <img rel="icon" type="image/x-icon" href="logo_gmni.png">
+    <link rel="icon" type="image/x-icon" href="logo_gmni.png">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstati.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstati.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -501,7 +503,30 @@
     </div>
 
     <!-- JAVASCRIPT LOGIC -->
-    <script>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBXjcLlISAKnDGMFQqbrpJrD_Z9HxK0Ae0",
+    authDomain: "rumah-marhain.firebaseapp.com",
+    databaseURL: "https://rumah-marhain-default-rtdb.firebaseio.com",
+    projectId: "rumah-marhain",
+    storageBucket: "rumah-marhain.firebasestorage.app",
+    messagingSenderId: "1049442253127",
+    appId: "1:1049442253127:web:171d9677b3364de159f462",
+    measurementId: "G-T9YRKXRQ6N"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
         document.getElementById('year').textContent = new Date().getFullYear();
 
         // Mobile Menu Toggle
@@ -544,11 +569,14 @@
                 alasan,
                 status: 'Pending'
             };
+                if (typeof firebase !== 'undefined' && firebase.apps.length)
+            firebase.database().ref('pendaftar').push(newKader);
+            }
 
             const db = getRegistrations();
             db.push(newKader);
             saveRegistrations(db);
-
+            {
             document.getElementById('form-pendaftaran').reset();
             const alertBox = document.getElementById('success-alert');
             alertBox.classList.remove('hidden');
@@ -658,6 +686,18 @@
             link.click();
             document.body.removeChild(link);
         }
+         if (typeof firebase !== 'undefined' && firebase.apps.length) {
+    firebase.database().ref('pendaftar').on('value', (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const dataArray = Object.values(data);
+        saveRegistrations(dataArray);
+        if (typeof renderAdminTable === 'function') {
+          renderAdminTable();
+        }
+        }
+    });
+    }
     </script>
 </body>
 </html>
